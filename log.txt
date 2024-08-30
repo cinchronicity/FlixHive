@@ -1,1 +1,0 @@
-whenever a req made to server, it will add the visited URL and timestamp req was made 

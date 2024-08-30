@@ -1,13 +1,8 @@
-//imports the http module and uses it to create a server that listens on port 8080.
-
-//import the url module and use it to parse the request URL.
-
 const http = require("http"),
-  fs = require("fs"),
-  url = require("url");
+    fs = require("fs"),
+    url = require("url");
 
-http
-  .createServer((request, response) => {
+http.createServer((request, response) => {
     let addr = request.url,
       q = new URL(addr, "http://" + request.headers.host),
       filePath = "";
@@ -24,7 +19,8 @@ http
       }
     );
 
-    if (q.pathname.includes("documentation")) { //if the request URL contains the string "documentation", the server will serve the documentation.html file. Otherwise, will serve the index.html file.
+    if (q.pathname.includes("documentation")) {
+      //if request URL has string "documentation", server will serve the documentation.html file. Otherwise, will serve the index.html file.
       filePath = __dirname + "/documentation.html";
     } else {
       filePath = "index.html";
@@ -42,5 +38,3 @@ http
   })
   .listen(8080);
 console.log("My test server is running on Port 8080.");
-
-
