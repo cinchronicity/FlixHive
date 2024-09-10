@@ -4,10 +4,6 @@ const morgan = require("morgan"); //import morgan module for logging
 
 app.use(morgan("common"));
 
-app.get("/", (req, res) => {
-  res.send("Welcome to my app!");
-});
-
 app.get("/secreturl", (req, res) => {
   res.send("This is a secret url with super top-secret content.");
 });
@@ -41,7 +37,7 @@ app.get("/movies", (req, res) => {
   res.json(top10movies);
 });
 
-app.use(express.static("public")); //Serve static files in a public folder
+app.use(express.static("public")); //Serve static files in a public folder in the project directory.
 
 //Error-handling middleware function to log all application errors
 app.use((err, req, res, next) => {
