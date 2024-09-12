@@ -104,35 +104,113 @@
                     <th>Request Description</th>
                     <th>URL</th>
                     <th>HTTP Method</th>
-                    <th>Query Parameters</th>
+                    <th>URL Parameters</th>
                     <th>Request Body Format</th>
                     <th>Response Body Format</th>
 
                 </tr>
             </thead>
             <tbody>
-                <!-- CREATE NEW USER -->
+                
+                <!-- CREATE NEW USER-->
                 <tr>
                     <td>Allows new users to register and assigns them a unique ID</td>
                     <td>/users</td>
                     <td>POST</td>
                     <td>none</td>
-                    <td>
+                    <td>A JSON object including a name and favorite movies <br> Example:
+
                         <pre>
-        {
-          "name": "string",
-          "favoriteMovies": ["string"]
-        }
-                  </pre>
+                        {
+                       "name": "string",
+                       "favoriteMovies": ["string"]
+                        }
+                    </pre>
                     </td>
-                    <td>
+                    <td>A JSON object along with their unique ID <br> Example:
+
                         <pre>
-        {
-        "userID": "uuid",
-        "name": "string",
-        "favoriteMovies": ["string"]
-        }
-                  </pre>
+                        {
+                        "userID": "uuid",
+                        "name": "string",
+                        "favoriteMovies": ["string"]
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- UPDATE USER INFO-->
+                <tr>
+                    <td>Allows users update their user info by their ID</td>
+                    <td>/users/:id</td>
+                    <td>PUT</td>
+                    <td>none</td>
+                    <td>A JSON object including updated user information <br> Example:
+
+                        <pre>
+                        {
+                       "name": "updatedString",
+                       "favoriteMovies": ["updatedString"]
+                        }
+                    </pre>
+                    </td>
+                    <td>A JSON object holding users updated info with their unique ID <br> Example:
+
+                        <pre>
+                        {
+                        "userID": "uuid",
+                        "name": "updatedString",
+                        "favoriteMovies": ["updatedString"]
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                
+                <!-- ADD MOVIE TO FAVORITES LIST-->
+                <tr>
+                    <td>Allows user to add a movie to their favorites list, according to their userID</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>POST</td>
+                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the movie has been added to user's list <br> Example:
+
+                        <pre>
+                        {movieTitle} has been added to {userID}'s favorite movies
+                    </pre>
+                    </td>
+                </tr>
+                <!-- DELETE A USER's FAVORITE MOVIE-->
+                <tr>
+                    <td>Allows user to delete a movie from their favorites list, according to their userID</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>DELETE</td>
+                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the movie has been deleted from user's list <br> Example:
+
+                        <pre>
+                        {movieTitle} has been removed from {userID}'s favorite movies
+                    </pre>
+                    </td>
+                </tr>
+                <!-- DELETE USER-->
+                <tr>
+                    <td>Allows user to deregister</td>
+                    <td>/users/:id</td>
+                    <td>DELETE</td>
+                    <td>Any existing userID </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the user has been removed <br> Example:
+
+                        <pre>
+                        {userID} has been deleted
+                    </pre>
                     </td>
                 </tr>
                 <!-- RETURN ALL MOVIES -->
@@ -189,106 +267,6 @@
                        "bio": "string",
                        ...
                         }
-                    </pre>
-                    </td>
-                </tr>
-                <!-- NEW USER REGISTRATION-->
-                <tr>
-                    <td>Allows new users to register and assigns a unique ID</td>
-                    <td>/users</td>
-                    <td>POST</td>
-                    <td>none</td>
-                    <td>A JSON object including a name and favorite movies <br> Example:
-
-                        <pre>
-                        {
-                       "name": "string",
-                       "favoriteMovies": ["string"]
-                        }
-                    </pre>
-                    </td>
-                    <td>A JSON object along with their unique ID <br> Example:
-
-                        <pre>
-                        {
-                        "userID": "uuid",
-                        "name": "string",
-                        "favoriteMovies": ["string"]
-                        }
-                    </pre>
-                    </td>
-                </tr>
-                <!-- UPDATE USER INFO-->
-                <tr>
-                    <td>Allows users update their user info by their ID</td>
-                    <td>/users/:id</td>
-                    <td>PUT</td>
-                    <td>none</td>
-                    <td>A JSON object including updated user information <br> Example:
-
-                        <pre>
-                        {
-                       "name": "updatedString",
-                       "favoriteMovies": ["updatedString"]
-                        }
-                    </pre>
-                    </td>
-                    <td>A JSON object holding users updated info with their unique ID <br> Example:
-
-                        <pre>
-                        {
-                        "userID": "uuid",
-                        "name": "updatedString",
-                        "favoriteMovies": ["updatedString"]
-                        }
-                    </pre>
-                    </td>
-                </tr>
-                <!-- ADD MOVIE TO FAVORITES LIST-->
-                <tr>
-                    <td>Allows user to add a movie to their favorites list, according to their userID</td>
-                    <td>/users/:id/:movieTitle</td>
-                    <td>POST</td>
-                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
-                    <td>none</td>
-
-
-                    <td>A text message showing the movie has been added to user's list <br> Example:
-
-                        <pre>
-                        {movieTitle} has been added to {userID}'s favorite movies
-                    </pre>
-                    </td>
-                </tr>
-                <!-- DELETE A USER's FAVORITE MOVIE-->
-                <tr>
-                    <td>Allows user to delete a movie from their favorites list, according to their userID</td>
-                    <td>/users/:id/:movieTitle</td>
-                    <td>DELETE</td>
-                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
-                    <td>none</td>
-
-
-                    <td>A text message showing the movie has been deleted from user's list <br> Example:
-
-                        <pre>
-                        {movieTitle} has been removed from {userID}'s favorite movies
-                    </pre>
-                    </td>
-                </tr>
-                <!-- DELETE USER-->
-                <tr>
-                    <td>Allows user to deregister</td>
-                    <td>/users/:id</td>
-                    <td>DELETE</td>
-                    <td>Any existing userID </td>
-                    <td>none</td>
-
-
-                    <td>A text message showing the user has been removed <br> Example:
-
-                        <pre>
-                        {userID} has been deleted
                     </pre>
                     </td>
                 </tr>
