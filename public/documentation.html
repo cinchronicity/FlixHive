@@ -5,55 +5,296 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyFlix Documentation</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: white;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #bdc3c7;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ecf0f1;
+        }
+    </style>
 </head>
 
+
 <body>
-    <!-- needs more styling refer to project brief and look at doc examples -->
-    <h2>MyFlix API </h2>
+    <div>
+        <!-- needs more styling refer to project brief and look at doc examples -->
+        <h1>MyFlix API </h1>
 
-    <h3> Documentation</h3>
-    Welcome to MyFlix API documentation!
-    <br>
-    The myFlix API is a RESTful web service built with Node.js and Express that provides users with access to
-    information about various movies, directors, and genres. The server-side application allows users to register,
-    manage their profiles, and curate a list of their favorite movies. The API supports CRUD operations, allowing users
-    to create, read, update, and delete data.
-    <h3> Key Features </h3>
-    <ul>
-        <li>
-            User Management: Users can sign up, update their information, and manage their accounts.
-        </li>
-        <li>
-            Movie Database: Access detailed information about movies, including genre, director, and other relevant
-            details.
-        </li>
-        <li>
-            Responsive Design: The API supports seamless integration with various client-side applications, enabling a
-            consistent user experience across devices.
-        </li>
+        <h3> Context</h3>
+        Welcome to MyFlix API documentation!
+        <br>
+        The myFlix API is a RESTful web service built with Node.js and Express that provides users with access to
+        information about various movies, directors, and genres. The server-side application allows users to register,
+        manage their profiles, and curate a list of their favorite movies. The API supports CRUD operations, allowing
+        users
+        to create, read, update, and delete data.
+        <h3> Key Features </h3>
+        <ul>
+            <li>
+                User Management: Users can sign up, update their information, and manage their accounts.
+            </li>
+            <li>
+                Movie Database: Access detailed information about movies, including genre, director, and other relevant
+                details.
+            </li>
+            <li>
+                Responsive Design: The API supports seamless integration with various client-side applications, enabling
+                a
+                consistent user experience across devices.
+            </li>
 
-    </ul>
+        </ul>
 
 
 
-    <h3>Technology Stack</h3>
-    This API is part of a full-stack JavaScript project using the MERN stack (MongoDB, Express, React, Node.js). The
-    backend is built with Node.js and Express, with data stored in a MongoDB database and modeled using Mongoose.
+        <h3>Technology Stack</h3>
+        This API is part of a full-stack JavaScript project using the MERN stack (MongoDB, Express, React, Node.js). The
+        backend is built with Node.js and Express, with data stored in a MongoDB database and modeled using Mongoose.
 
-    <h3>Purpose</h3>
-    The myFlix API serves as the backend component of a comprehensive movie application. It is designed for movie
-    enthusiasts who want quick and easy access to a wide range of movie-related information. This project
-    demonstrates skills in building scalable RESTful APIs, managing databases, and implementing user authentication
-    and data security.
+        <h3>Purpose</h3>
+        The myFlix API serves as the backend component of a comprehensive movie application. It is designed for movie
+        enthusiasts who want quick and easy access to a wide range of movie-related information. This project
+        demonstrates skills in building scalable RESTful APIs, managing databases, and implementing user authentication
+        and data security.
 
-    <h3>Usage</h3>
-    Developers can use the provided endpoints to interact with the movie database, manage user accounts, and
-    retrieve movie data. The API supports standard HTTP methods, making it easy to integrate into any client-side
-    application.
+        <h3>Usage</h3>
+        Developers can use the provided endpoints to interact with the movie database, manage user accounts, and
+        retrieve movie data. The API supports standard HTTP methods, making it easy to integrate into any client-side
+        application.
 
-    For detailed API documentation, including endpoint descriptions and usage examples, please refer to the sections
-    below.</p>
+        <p>For detailed API documentation, including endpoint descriptions and usage examples, please refer to the
+            sections
+            below.</p>
+    </div>
 
+
+
+    <h1>API Endpoints Documentation</h1>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Request Description</th>
+                    <th>URL</th>
+                    <th>HTTP Method</th>
+                    <th>Query Parameters</th>
+                    <th>Request Body Format</th>
+                    <th>Response Body Format</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <!-- CREATE NEW USER -->
+                <tr>
+                    <td>Allows new users to register and assigns them a unique ID</td>
+                    <td>/users</td>
+                    <td>POST</td>
+                    <td>none</td>
+                    <td>
+                        <pre>
+        {
+          "name": "string",
+          "favoriteMovies": ["string"]
+        }
+                  </pre>
+                    </td>
+                    <td>
+                        <pre>
+        {
+        "userID": "uuid",
+        "name": "string",
+        "favoriteMovies": ["string"]
+        }
+                  </pre>
+                    </td>
+                </tr>
+                <!-- RETURN ALL MOVIES -->
+                <tr>
+                    <td>Returns a list of all movies to the user</td>
+                    <td>/movies</td>
+                    <td>GET</td>
+                    <td>none</td>
+                    <td>none</td>
+                    <td>A JSON object holding data about all movies <br> Example:
+
+                        <pre>
+                        {
+                        "title": "string",
+                        "description": "string",
+                        "genre": {
+                            "name": "string",
+                            "description": "string"
+                            },
+                        ...
+                        }
+                                  </pre>
+                    </td>
+                </tr>
+                <!-- RETURN DATA ABOUT A GENRE-->
+                <tr>
+                    <td>Returns data for a genre and description of that genre</td>
+                    <td>/movies/genre/:genreName</td>
+                    <td>GET</td>
+                    <td>none</td>
+                    <td>none</td>
+                    <td>A JSON object holding data about a genre <br> Example:
+
+                        <pre>
+                        {
+                       "name": "string",
+                       "descriptiion": "string"
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- RETURN DATA ABOUT A DIRECTOR-->
+                <tr>
+                    <td>Returns data for a specific director</td>
+                    <td>/movies/director/:directorName</td>
+                    <td>GET</td>
+                    <td>none</td>
+                    <td>none</td>
+                    <td>A JSON object holding data about a director <br> Example:
+
+                        <pre>
+                        {
+                       "name": "string",
+                       "bio": "string",
+                       ...
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- NEW USER REGISTRATION-->
+                <tr>
+                    <td>Allows new users to register and assigns a unique ID</td>
+                    <td>/users</td>
+                    <td>POST</td>
+                    <td>none</td>
+                    <td>A JSON object including a name and favorite movies <br> Example:
+
+                        <pre>
+                        {
+                       "name": "string",
+                       "favoriteMovies": ["string"]
+                        }
+                    </pre>
+                    </td>
+                    <td>A JSON object along with their unique ID <br> Example:
+
+                        <pre>
+                        {
+                        "userID": "uuid",
+                        "name": "string",
+                        "favoriteMovies": ["string"]
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- UPDATE USER INFO-->
+                <tr>
+                    <td>Allows users update their user info by their ID</td>
+                    <td>/users/:id</td>
+                    <td>PUT</td>
+                    <td>none</td>
+                    <td>A JSON object including updated user information <br> Example:
+
+                        <pre>
+                        {
+                       "name": "updatedString",
+                       "favoriteMovies": ["updatedString"]
+                        }
+                    </pre>
+                    </td>
+                    <td>A JSON object holding users updated info with their unique ID <br> Example:
+
+                        <pre>
+                        {
+                        "userID": "uuid",
+                        "name": "updatedString",
+                        "favoriteMovies": ["updatedString"]
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- ADD MOVIE TO FAVORITES LIST-->
+                <tr>
+                    <td>Allows user to add a movie to their favorites list, according to their userID</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>POST</td>
+                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the movie has been added to user's list <br> Example:
+
+                        <pre>
+                        {movieTitle} has been added to {userID}'s favorite movies
+                    </pre>
+                    </td>
+                </tr>
+                <!-- DELETE A USER's FAVORITE MOVIE-->
+                <tr>
+                    <td>Allows user to delete a movie from their favorites list, according to their userID</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>DELETE</td>
+                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the movie has been deleted from user's list <br> Example:
+
+                        <pre>
+                        {movieTitle} has been removed from {userID}'s favorite movies
+                    </pre>
+                    </td>
+                </tr>
+                <!-- DELETE USER-->
+                <tr>
+                    <td>Allows user to deregister</td>
+                    <td>/users/:id</td>
+                    <td>DELETE</td>
+                    <td>Any existing userID </td>
+                    <td>none</td>
+
+
+                    <td>A text message showing the user has been removed <br> Example:
+
+                        <pre>
+                        {userID} has been deleted
+                    </pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
