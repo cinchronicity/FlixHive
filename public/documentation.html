@@ -122,8 +122,11 @@
 
                         <pre>
                         {
-                       "name": "string",
-                       "favoriteMovies": ["string"]
+                            username: { type: String, required: true },
+                            password: { type: String, required: true },
+                            email: { type: String, required: true },
+                            birthdate: {type: Date},
+                            favoriteMovies: ["string"]
                         }
                     </pre>
                     </td>
@@ -131,35 +134,42 @@
 
                         <pre>
                         {
-                        "userID": "uuid",
-                        "name": "string",
-                        "favoriteMovies": ["string"]
+                        "_id": "uuid",
+                        username: { type: String, required: true },
+                        password: { type: String, required: true },
+                        email: { type: String, required: true },
+                        birthdate: {type: Date},
+                        favoriteMovies: ["MovieID"]
                         }
                     </pre>
                     </td>
                 </tr>
                 <!-- UPDATE USER INFO-->
                 <tr>
-                    <td>Allows users update their user info by their ID</td>
-                    <td>/users/:id</td>
+                    <td>Allows users update their user info by their username</td>
+                    <td>/users/:username</td>
                     <td>PUT</td>
                     <td>none</td>
                     <td>A JSON object including updated user information <br> Example:
 
                         <pre>
                         {
-                       "name": "updatedString",
-                       "favoriteMovies": ["updatedString"]
+                        "username": "updatedString",
+                        "password": "updatedString",
                         }
                     </pre>
                     </td>
-                    <td>A JSON object holding users updated info with their unique ID <br> Example:
+                    <td>A JSON object holding users updated info  <br> Example:
 
                         <pre>
                         {
-                        "userID": "uuid",
-                        "name": "updatedString",
-                        "favoriteMovies": ["updatedString"]
+                            "_id": "uuid",
+                            username: "updatedString",
+                            password: "updatedString",
+                            email: "string",
+                            birthdate: Date,
+                            favoriteMovies: ["MovieID"]
+                            
                         }
                     </pre>
                     </td>
@@ -167,49 +177,65 @@
                 
                 <!-- ADD MOVIE TO FAVORITES LIST-->
                 <tr>
-                    <td>Allows user to add a movie to their favorites list, according to their userID</td>
-                    <td>/users/:id/:movieTitle</td>
+                    <td>Allows user to add a movie to their favorites list using MovieID</td>
+                    <td>/users/:username/movies/:MovieID</td>
                     <td>POST</td>
                     <td>Any existing movie (spaces in movieTitle must include %20) </td>
                     <td>none</td>
 
 
-                    <td>A text message showing the movie has been added to user's list <br> Example:
+                    <td>A JSON object with added MovieID <br> Example:
 
                         <pre>
-                        {movieTitle} has been added to {userID}'s favorite movies
+                            {
+                                "_id": "uuid",
+                                username: "updatedString",
+                                password: "updatedString",
+                                email: "string",
+                                birthdate: Date,
+                                favoriteMovies: ["newMovieID"]
+                                
+                            }
                     </pre>
                     </td>
                 </tr>
                 <!-- DELETE A USER's FAVORITE MOVIE-->
                 <tr>
-                    <td>Allows user to delete a movie from their favorites list, according to their userID</td>
-                    <td>/users/:id/:movieTitle</td>
+                    <td>Allows user to delete a movie from their favorites list, according to the MovieID</td>
+                    <td>/users/:username/movies/:MovieID</td>
                     <td>DELETE</td>
                     <td>Any existing movie (spaces in movieTitle must include %20) </td>
                     <td>none</td>
 
 
-                    <td>A text message showing the movie has been deleted from user's list <br> Example:
+                    <td>A JSON object with deleted MovieID <br> Example:
 
                         <pre>
-                        {movieTitle} has been removed from {userID}'s favorite movies
+                            {
+                                "_id": "uuid",
+                                username: "updatedString",
+                                password: "updatedString",
+                                email: "string",
+                                birthdate: Date,
+                                favoriteMovies: [""]
+                                
+                            }
                     </pre>
                     </td>
                 </tr>
                 <!-- DELETE USER-->
                 <tr>
                     <td>Allows user to deregister</td>
-                    <td>/users/:id</td>
+                    <td>/users/:username</td>
                     <td>DELETE</td>
-                    <td>Any existing userID </td>
+                    <td>Any existing username </td>
                     <td>none</td>
 
 
                     <td>A text message showing the user has been removed <br> Example:
 
                         <pre>
-                        {userID} has been deleted
+                        {username} was deleted
                     </pre>
                     </td>
                 </tr>
@@ -220,7 +246,30 @@
                     <td>GET</td>
                     <td>none</td>
                     <td>none</td>
-                    <td>A JSON object holding data about all movies <br> Example:
+                    <td> JSON object's holding data about all movies <br> Example:
+
+                        <pre>
+                        {
+                        "title": "string",
+                        "description": "string",
+                        "genre": {
+                            "name": "string",
+                            "description": "string"
+                            },
+                        ...
+                        }
+                                  </pre>
+                    </td>
+                </tr>
+            
+                <!-- RETURN DATA ABOUT A SPECIFIC MOVIE BY TITLE-->
+                <tr>
+                    <td>Returns movie data</td>
+                    <td>/movies/:title</td>
+                    <td>GET</td>
+                    <td>none</td>
+                    <td>none</td>
+                    <td> JSON object's holding data about specified movie <br> Example:
 
                         <pre>
                         {
@@ -237,8 +286,8 @@
                 </tr>
                 <!-- RETURN DATA ABOUT A GENRE-->
                 <tr>
-                    <td>Returns data for a genre and description of that genre</td>
-                    <td>/movies/genre/:genreName</td>
+                    <td>Returns data for specified genre</td>
+                    <td>/genres/:name</td>
                     <td>GET</td>
                     <td>none</td>
                     <td>none</td>
@@ -247,7 +296,7 @@
                         <pre>
                         {
                        "name": "string",
-                       "descriptiion": "string"
+                       "description": "string"
                         }
                     </pre>
                     </td>
@@ -255,7 +304,7 @@
                 <!-- RETURN DATA ABOUT A DIRECTOR-->
                 <tr>
                     <td>Returns data for a specific director</td>
-                    <td>/movies/director/:directorName</td>
+                    <td>/directors/:directorName</td>
                     <td>GET</td>
                     <td>none</td>
                     <td>none</td>
@@ -265,6 +314,25 @@
                         {
                        "name": "string",
                        "bio": "string",
+                       ...
+                        }
+                    </pre>
+                    </td>
+                </tr>
+                <!-- RETURN DATA ABOUT AN ACTOR-->
+                <tr>
+                    <td>Returns data for a specific actor</td>
+                    <td>/actors/:actorName</td>
+                    <td>GET</td>
+                    <td>none</td>
+                    <td>none</td>
+                    <td>A JSON object holding data about specified Actor <br> Example:
+
+                        <pre>
+                        {
+                        "_id": "uuid",
+                        "name": "string",
+                        "birthYear": "integer"
                        ...
                         }
                     </pre>
