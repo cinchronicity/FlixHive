@@ -19,19 +19,18 @@ mongoose.connect("mongodb://localhost:27017/movie_apiDB", {
 }); // allows mongoose to connect to movie_apiDB database on local MongoDB server to perform CRUD ops
 
 //CREATE - add a user
-
 app.post("/users", async (req, res) => {
-  await Users.findOne({ Username: req.body.Username })
+  await Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.Username + "already exists"); //query user and if user exists, return 400 status code and msg
+        return res.status(400).send(req.body.username + "already exists"); //query user and if user exists, return 400 status code and msg
       } else {
         Users.create({
           //if user does not exist, create new user with defined users schema in models.js
-          Username: req.body.Username,
-          Password: req.body.Password,
-          Email: req.body.Email,
-          Birthday: req.body.Birthday,
+          username: req.body.username,
+          password: req.body.password,
+          email: req.body.email,
+          birthday: req.body.birthday,
         })
           .then((user) => {
             res.status(201).json(user);
@@ -62,8 +61,8 @@ app.get("/users", async (req, res) => {
 });
 
 // READ- Get a user by username
-app.get("/users/:Username", async (req, res) => {
-  await Users.findOne({ Username: req.params.Username }) //pass a parameter(Username) to the findOne method to find a user by username
+app.get("/users/:username", async (req, res) => {
+  await Users.findOne({ username: req.params.username }) //pass a parameter(Username) to the findOne method to find a user by username
     .then((user) => {
       res.json(user);
     })
@@ -74,16 +73,18 @@ app.get("/users/:Username", async (req, res) => {
 });
 
 //UPDATE- allow users to update their user info
-app.put("/users/:Username", async (req, res) => {
+app.put("/users/:username", async (req, res) => {
+  console.log('Request Body:', req.body); // Log the request body
+
   await Users.findOneAndUpdate(
-    { Username: req.params.Username },
+    { username: req.params.username },
     {
       //find user by username and update using set (specifies what fields to update)
       $set: {
-        Username: req.body.Username,
-        Password: req.body.Password,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday,
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        birthdate: req.body.birthdate,
       },
     },
     { new: true }
@@ -98,12 +99,12 @@ app.put("/users/:Username", async (req, res) => {
     });
 });
 
-// CREATE- Add a movie to a user's list of favorites **need to test this route
-app.post("/users/:Username/movies/:MovieID", async (req, res) => {
+// CREATE- Add a movie to a user's list of favorites 
+app.post("/users/:username/movies/:MovieID", async (req, res) => {
   await Users.findOneAndUpdate(
-    { Username: req.params.Username },
+    { username: req.params.username },
     {
-      $push: { FavoriteMovies: req.params.MovieID },
+      $push: { favoriteMovies: req.params.MovieID }, //*check if MovieID routes correctly */
     },
     { new: true }
   ) // This line makes sure that the updated document is returned
@@ -140,117 +141,92 @@ app.get("/movies/:title", async (req, res) => {
     });
 });
 
-// //CREATE - allows users to add movie their list of favorites
-// app.post('/users/:id/:movieTitle', (req, res) => {
-//   const { id, movieTitle } = req.params;
+// Delete a user by username
+app.delete("/users/:username", async (req, res) => {
+  await Users.findOneAndDelete({ username: req.params.username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.username + " was not found");
+      } else {
+        res.status(200).send(req.params.username + " was deleted.");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-//   let user =users.find (user => user.userID == id ); //let bc if there is a user, we will give it the new updated users name.  ==userID will be a number, but id will be a string from URL strig
+//Return data about a director (bio, birth year, death year) by name
+app.get("/directors/:name", async (req, res) => {
+  await Movies.findOne({ 'director.name': req.params.name }) 
+    .then((director) => {
+      res.json(director.director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-//   if (user) { //first will find the user, then will push the movie title to the user's favorite movies array
-//     user.favoriteMovies.push(movieTitle) ;
-//     res.status(200).send(`${movieTitle} has been added to user ${id}'s favorite movies`);
-//   } else {
-//     res.status(400).send('user not found');
-//   }
+//Return data about a genre (description) by name/title (e.g., “Thriller”)
+app.get("/genres/:name", async (req, res) => {
+  await Movies.findOne({ 'genre.name': req.params.name }) 
+    .then((genre) => {
+      res.json(genre.genre);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// });
+//Return data about an actor (bio, birth year) by name
+app.get("/actors/:name", async (req, res) => {
+  await Actors.findOne({ name: req.params.name }) 
+    .then((actor) => {
+      res.json(actor);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// //READ
-// app.get("/", (req, res) => {
-//   res.send("Welcome to my movie club!");
-// }); //GET request to the / endpoint will return a welcome message.
+//Allow users to remove a movie from their list of favorites
+app.delete("/users/:username/movies/:MovieID", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { username: req.params.username },
+    {
+      $pull: { favoriteMovies: req.params.MovieID },
+    },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// app.get("/documentation", (req, res) => {
-//   res.sendFile("public/documentation.html", { root: __dirname });
-// }); //GET request to the /documentation endpoint will return the documentation HTML file.
+//Allow existing users to deregister
+app.delete("/users/:username", async (req, res) => {
+  await Users.findOneAndDelete({ username: req.params.username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.username + " was not found");
+      } else {
+        res.status(200).send(req.params.username + " was deleted.");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-// //READ - return a list of all movies to user
-// app.get("/movies", (req, res) => {
-//   res.status(200).json(movies);
-// });
-
-// //READ - in crud- return info about a single movie by title to user
-// app.get('/movies/:title', (req, res) => {
-//   // const title = req.params.title;
-//   const { title } = req.params; //object destructuring- same as above- creates new var title and that title will be equal to the property of the same name on the object thats on the r side of equal sign
-//   const movie = movies.find( movie => movie.title === title); // when you find the movie that has the same title as the title that was passed in the url, return that movie
-
-//   if (movie) {
-//     res.status(200).json(movie);
-//   } else {
-//     res.status(400).send('no movie found with that title');
-//   }
-// });
-
-// //READ - return data about a genre object by name/title
-// app.get('/movies/genre/:genreName', (req, res) => {
-//   const { genreName } = req.params;
-//   const genre = movies.find( movie => movie.genre.name === genreName).genre; //will return property genre of the movie object when the genre name is equal to the genre name passed in the url (.genre is used to return the genre object)
-
-//   if (genre) {
-//     res.status(200).json(genre);
-//   } else {
-//     res.status(400).send('genre not found');
-//   }
-// });
-
-// // READ return data about a director by name
-// app.get('/movies/directors/:directorName', (req, res) => {
-//   const { directorName } = req.params;
-//   const director = movies.find( movie => movie.director.name === directorName).director;
-
-//   if (director) {
-//     res.status(200).json(director);
-//   } else {
-//     res.status(400).send('director not found');
-//   }
-// });
-
-// //UPDATE to allow users to update their user info
-// app.put('/users/:id', (req, res) => { //put their id in URL string
-//   const updatedUser = req.body;
-//   const { id } = req.params;
-
-//   let user =users.find (user => user.userID == id ) //let bc if there is a user, we will give it the new updated users name.  ==userID will be a number, but id will be a string from URL strig
-
-//   if (user) {
-//     user.name = updatedUser.name;
-//     res.status(200).json(user);
-//   } else {
-//     res.status(400).send('user not found');
-//   }
-
-// });
-
-// //DELETE - allow users to remove a movie from their list of favorites
-// app.delete('/users/:id/:movieTitle', (req, res) => {
-//   const { id, movieTitle } = req.params;
-
-//   let user =users.find (user => user.userID == id );  //first checking to see if user exists
-//   if (user) {
-//     user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle); //filter out the movie title that is not equal to the movie title that was passed in the URL
-//     res.status(200).send(`${movieTitle} has been removed from user ${id}'s favorite movies`);
-//   } else {
-//     res.status(400).send('movie not found');
-//   }
-
-// });
-
-// //DELETE - allows users to deregister
-// app.delete('/users/:id', (req, res) => {
-//   const { id } = req.params;
-
-//   let user = users.find (user => user.userID == id );
-
-//   if (user) {
-//     users = users.filter( user => user.userID != id ); //filter method gets the fn that checks if userID is not equal to the id that was passed in the URL
-
-//     res.status(200).send(` user ${id}'s has been deleted`);
-//   } else {
-//     res.status(400).send('user not found');
-//   }
-
-// });
 
 //default response for when a request is made to the root URL
 app.get("/", (req, res) => {
