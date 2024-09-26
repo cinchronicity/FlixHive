@@ -22,7 +22,7 @@ let userSchema = mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
   email: { type: String, required: true },
-  Birthday: Date,
+  birthdate: Date, //correct format is yyyy-mm-dd
   favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }], //
 });
 
