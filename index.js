@@ -13,10 +13,17 @@ const Actors = Models.Actor;
 app.use(morgan("common"));
 app.use(bodyParser.json()); //lets us to be able to read data from body object
 app.use(express.urlencoded({ extended: true })); //allows us to read data from the body of POST requests
+
+let auth = require("./auth")(app); //(app) allows Express into auth.js file
+const passport = require("passport");
+require("./passport");
+
 mongoose.connect("mongodb://localhost:27017/movie_apiDB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }); // allows mongoose to connect to movie_apiDB database on local MongoDB server to perform CRUD ops
+
+//apply JWT authentication
 
 //CREATE - add a user
 app.post("/users", async (req, res) => {
@@ -30,7 +37,7 @@ app.post("/users", async (req, res) => {
           username: req.body.username,
           password: req.body.password,
           email: req.body.email,
-          birthday: req.body.birthday,
+          birthdate: req.body.birthdate,
         })
           .then((user) => {
             res.status(201).json(user);
@@ -73,9 +80,11 @@ app.get("/users/:username", async (req, res) => {
 });
 
 //UPDATE- allow users to update their user info
-app.put("/users/:username", async (req, res) => {
-  console.log('Request Body:', req.body); // Log the request body
-
+app.put("/users/:username", passport.authenticate('jwt', { session: false }), async (req, res) => {
+  //condition to check if the user is authorized to make changes to specified user
+  if(req.user.username !== req.params.username) {
+    return res.status(400).send(req.params.username + " is not authorized to update this user profile");
+  }
   await Users.findOneAndUpdate(
     { username: req.params.username },
     {
@@ -99,7 +108,7 @@ app.put("/users/:username", async (req, res) => {
     });
 });
 
-// CREATE- Add a movie to a user's list of favorites 
+// CREATE- Add a movie to a user's list of favorites
 app.post("/users/:username/movies/:MovieID", async (req, res) => {
   await Users.findOneAndUpdate(
     { username: req.params.username },
@@ -118,16 +127,20 @@ app.post("/users/:username/movies/:MovieID", async (req, res) => {
 });
 
 //return a list of all movies to user as JSON object
-app.get("/movies", (req, res) => {
-  Movies.find()
-    .then((movies) => {
-      res.status(201).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    await Movies.find()
+      .then((movies) => {
+        res.status(201).json(movies);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // READ- return data about a single movie by title to user
 app.get("/movies/:title", async (req, res) => {
@@ -159,7 +172,7 @@ app.delete("/users/:username", async (req, res) => {
 
 //Return data about a director (bio, birth year, death year) by name
 app.get("/directors/:name", async (req, res) => {
-  await Movies.findOne({ 'director.name': req.params.name }) 
+  await Movies.findOne({ "director.name": req.params.name })
     .then((director) => {
       res.json(director.director);
     })
@@ -171,7 +184,7 @@ app.get("/directors/:name", async (req, res) => {
 
 //Return data about a genre (description) by name/title (e.g., “Thriller”)
 app.get("/genres/:name", async (req, res) => {
-  await Movies.findOne({ 'genre.name': req.params.name }) 
+  await Movies.findOne({ "genre.name": req.params.name })
     .then((genre) => {
       res.json(genre.genre);
     })
@@ -183,7 +196,7 @@ app.get("/genres/:name", async (req, res) => {
 
 //Return data about an actor (bio, birth year) by name
 app.get("/actors/:name", async (req, res) => {
-  await Actors.findOne({ name: req.params.name }) 
+  await Actors.findOne({ name: req.params.name })
     .then((actor) => {
       res.json(actor);
     })
@@ -226,7 +239,6 @@ app.delete("/users/:username", async (req, res) => {
       res.status(500).send("Error: " + err);
     });
 });
-
 
 //default response for when a request is made to the root URL
 app.get("/", (req, res) => {
