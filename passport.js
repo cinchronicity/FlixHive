@@ -24,6 +24,11 @@ passport.use(
               message: "Incorrect username or password.",
             });
           }
+          if (!user.validatePassword(password)) {
+            //hash password when logging in before comparing to password stored in MOngoDB
+            console.log("incorrect password");
+            return callback(null, false, { message: "Incorrect password." });
+          }
           console.log("finished");
           return callback(null, user);
         })
