@@ -41,11 +41,12 @@ const passport = require("passport");
 require("./passport");
 
 // allows mongoose to connect to movie_apiDB database on local MongoDB server to perform CRUD ops
-mongoose.connect("mongodb://localhost:27017/movie_apiDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-//apply JWT authentication
+// mongoose.connect("mongodb://localhost:27017/movie_apiDB", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+
 
 //CREATE - add a user
 app.post(
@@ -339,10 +340,12 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-//Listen for requests
+//Listen for requests on port 8080
 // app.listen(8080, () => {
 //   console.log("Your app is listening on port 8080.");
 // });
+
+//listens for requests and logs the port number
 const port = process.env.PORT || 8080;
 app.listen(port, "0.0.0.0", () => {
   console.log("Listening on Port " + port);
