@@ -72,27 +72,28 @@ app.post(
     }
     let hashedPassword = Users.hashPassword(req.body.password); //lowercase P? hash password entered by user when registering before storing it in MongoDB
     await Users.findOne({ username: req.body.username })
-      .then((user) => {
-        if (user) {
+      .then((user) => { //check if user already exists
+        if (user) { 
           return res.status(400).send(req.body.username + "already exists"); //query user and if user exists, return 400 status code and msg
         } else {
           Users.create({
             //if user does not exist, create new user with defined users schema in models.js
             username: req.body.username,
-            password: req.body.password,
+            password: hashedPassword,
             email: req.body.email,
             birthdate: req.body.birthdate,
           })
-            .then((user) => {
+            .then((user) => { //if user is created, return 201 status code and user object
               res.status(201).json(user);
             }) //callback fn on the promise
-            .catch((error) => {
-              //error handling
+            .catch((error) => { 
+              //error handling for create method
               console.error(error);
               res.status(500).send("Error: " + error);
             });
         }
       })
+      // error for findOne method
       .catch((error) => {
         console.error(error);
         res.status(500).send("Error: " + error);
