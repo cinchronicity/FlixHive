@@ -46,7 +46,7 @@ require("./passport");
 //   useUnifiedTopology: true,
 // });
 
-//connects to MongoDB Atlas database without showing Mongo credentials
+//connects Heroku app to MongoDB Atlas database without showing Mongo credentials
 mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
