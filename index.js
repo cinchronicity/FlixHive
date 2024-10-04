@@ -47,6 +47,11 @@ require("./passport");
 // });
 
 
+//connects to MongoDB Atlas database without showing Mongo credentials
+mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 //CREATE - add a user
 app.post(
