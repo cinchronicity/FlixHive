@@ -46,7 +46,6 @@ require("./passport");
 //   useUnifiedTopology: true,
 // });
 
-
 //connects to MongoDB Atlas database without showing Mongo credentials
 mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
@@ -70,10 +69,12 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    let hashedPassword = Users.hashPassword(req.body.password); //lowercase P? hash password entered by user when registering before storing it in MongoDB
+    let hashedPassword = Users.hashPassword(req.body.password); //hash password entered by user when registering before storing it in MongoDB
+    console.log("hashed password: ", hashedPassword); //log hashed password for debugging
     await Users.findOne({ username: req.body.username })
-      .then((user) => { //check if user already exists
-        if (user) { 
+      .then((user) => {
+        //check if user already exists
+        if (user) {
           return res.status(400).send(req.body.username + "already exists"); //query user and if user exists, return 400 status code and msg
         } else {
           Users.create({
@@ -83,10 +84,11 @@ app.post(
             email: req.body.email,
             birthdate: req.body.birthdate,
           })
-            .then((user) => { //if user is created, return 201 status code and user object
+            .then((user) => {
+              //if user is created, return 201 status code and user object
               res.status(201).json(user);
             }) //callback fn on the promise
-            .catch((error) => { 
+            .catch((error) => {
               //error handling for create method
               console.error(error);
               res.status(500).send("Error: " + error);
