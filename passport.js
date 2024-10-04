@@ -16,7 +16,7 @@ passport.use(
     },
     async (username, password, callback) => {
       // console.log("${username} ${password}");
-      console.log(username + " " + password);
+      console.log(username + " " + password); //for debugging
       await Users.findOne({ username: username })
         .then((user) => {
           if (!user) {
