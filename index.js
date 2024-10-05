@@ -243,16 +243,11 @@ app.put(
   passport.authenticate("jwt", { session: false }),
   //ensures provided fields are valid
   [
-    check("username", "username is required").isLength({ min: 5 }),
-    check(
-      "username",
-      "username contains non alphanumeric characters - not allowed."
-    ).isAlphanumeric(),
-    check("email", "Email does not appear to be valid").isEmail(),
-    check("password", "Password is required").not().isEmpty(),
-    check("birthdate", "Birthdate must be YYY-MM-DD").isDate({
-      format: "YYYY-MM-DD",
-    }),
+    check("username").optional().isLength({ min: 5 }).withMessage("Username must be at least 5 characters long"),
+    check("username").optional().isAlphanumeric().withMessage("Username contains non-alphanumeric characters - not allowed."),
+    check("email").optional().isEmail().withMessage("Email does not appear to be valid"),
+    check("password").optional().not().isEmpty().withMessage("Password is required"),
+    check("birthdate").optional().isDate().withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
   ],
   async (req, res) => {
     //check validation object for errors
