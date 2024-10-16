@@ -160,7 +160,6 @@ app.get(
 //READ- return a list of all movies to user as JSON object
 app.get(
   "/movies",
-  passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     await Movies.find()
       .then((movies) => {
