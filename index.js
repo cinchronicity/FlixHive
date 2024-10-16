@@ -16,7 +16,11 @@ app.use(bodyParser.json()); //lets us to be able to read data from body object
 app.use(express.urlencoded({ extended: true })); //allows us to read data from the body of POST requests
 
 const cors = require("cors"); //import cors module to allow requests from all origins
-let allowedOrigins = ["http://localhost:8080", "http://testsite.com"];
+let allowedOrigins = [
+  "http://localhost:8080",
+  "http://testsite.com",
+  "http://localhost:1234",
+];
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -158,19 +162,16 @@ app.get(
 );
 
 //READ- return a list of all movies to user as JSON object
-app.get(
-  "/movies",
-  async (req, res) => {
-    await Movies.find()
-      .then((movies) => {
-        res.status(201).json(movies);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error: " + err);
-      });
-  }
-);
+app.get("/movies", async (req, res) => {
+  await Movies.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
 // READ- return data about a single movie by title to user
 app.get(
@@ -242,11 +243,29 @@ app.put(
   passport.authenticate("jwt", { session: false }),
   //ensures provided fields are valid
   [
-    check("username").optional().isLength({ min: 5 }).withMessage("Username must be at least 5 characters long"),
-    check("username").optional().isAlphanumeric().withMessage("Username contains non-alphanumeric characters - not allowed."),
-    check("email").optional().isEmail().withMessage("Email does not appear to be valid"),
-    check("password").optional().not().isEmpty().withMessage("Password is required"),
-    check("birthdate").optional().isDate().withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
+    check("username")
+      .optional()
+      .isLength({ min: 5 })
+      .withMessage("Username must be at least 5 characters long"),
+    check("username")
+      .optional()
+      .isAlphanumeric()
+      .withMessage(
+        "Username contains non-alphanumeric characters - not allowed."
+      ),
+    check("email")
+      .optional()
+      .isEmail()
+      .withMessage("Email does not appear to be valid"),
+    check("password")
+      .optional()
+      .not()
+      .isEmpty()
+      .withMessage("Password is required"),
+    check("birthdate")
+      .optional()
+      .isDate()
+      .withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
   ],
   async (req, res) => {
     //check validation object for errors
