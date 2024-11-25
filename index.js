@@ -162,16 +162,20 @@ app.get(
 );
 
 //READ- return a list of all movies to user as JSON object
-app.get("/movies", passport.authenticate("jwt", { session: false }), async (req, res) => {
-  await Movies.find()
-    .then((movies) => {
-      res.status(201).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    await Movies.find()
+      .then((movies) => {
+        res.status(201).json(movies);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 // READ- return data about a single movie by title to user
 app.get(
@@ -282,16 +286,19 @@ app.put(
         );
     }
     //update user doc with provided fields
+    let reqbody = {
+      username: req.body.username,
+      email: req.body.email,
+      birthdate: req.body.birthdate,
+    };
+    if (req.body.password) {
+      reqbody.password = Users.hashPassword(req.body.password);
+    }
     await Users.findOneAndUpdate(
       { username: req.params.username },
       {
         //find user by username and update using set (specifies what fields to update)
-        $set: {
-          username: req.body.username,
-          password: Users.hashPassword(req.body.password),
-          email: req.body.email,
-          birthdate: req.body.birthdate,
-        },
+        $set: reqbody,
       },
       { new: true }
     ) // This line makes sure that the updated document is returned
