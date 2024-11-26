@@ -271,10 +271,6 @@ app.put(
       .withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
   ],
   async (req, res) => {
-    // Log for debugging
-    console.log("Authenticated user:", req.user);
-    console.log("Username from params:", req.params.username);
-    console.log("Request body:", req.body);
 
     // Check validation object for errors
     let errors = validationResult(req);
