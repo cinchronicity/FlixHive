@@ -245,7 +245,6 @@ app.get(
 app.put(
   "/users/:username",
   passport.authenticate("jwt", { session: false }),
-  //ensures provided fields are valid
   [
     check("username")
       .optional()
@@ -272,44 +271,68 @@ app.put(
       .withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
   ],
   async (req, res) => {
-    //check validation object for errors
+    // Log for debugging
+    console.log("Authenticated user:", req.user);
+    console.log("Username from params:", req.params.username);
+    console.log("Request body:", req.body);
+
+    // Check validation object for errors
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    //condition to check if the user is authorized to make changes to specified user
-    if (req.user.username !== req.params.username) {
-      return res
-        .status(400)
-        .send(
-          req.params.username + " is not authorized to update this user profile"
-        );
-    }
-    //update user doc with provided fields
-    let reqbody = {
-      username: req.body.username,
-      email: req.body.email,
-      birthdate: req.body.birthdate,
-    };
-    if (req.body.password) {
-      reqbody.password = Users.hashPassword(req.body.password);
-    }
-    await Users.findOneAndUpdate(
-      { username: req.params.username },
-      {
-        //find user by username and update using set (specifies what fields to update)
-        $set: reqbody,
-      },
-      { new: true }
-    ) // This line makes sure that the updated document is returned
-      .then((updatedUser) => {
-        //promise then method to return updated user
-        res.json(updatedUser);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error: " + err);
+
+    try {
+      // Find the existing user by ID from the JWT token
+      const existingUser = await Users.findById(req.user._id);
+      
+      if (!existingUser) {
+        return res.status(404).send("User not found");
+      }
+
+      // Prepare update object
+      const updateData = {};
+      
+      // Only add fields that are present in the request
+      if (req.body.username) updateData.username = req.body.username;
+      if (req.body.email) updateData.email = req.body.email;
+      if (req.body.birthdate) updateData.birthdate = req.body.birthdate;
+      
+      // Special handling for password
+      if (req.body.password) {
+        updateData.password = Users.hashPassword(req.body.password);
+      }
+
+      // Perform the update using the user's ID
+      const updatedUser = await Users.findByIdAndUpdate(
+        req.user._id, 
+        { $set: updateData }, 
+        { 
+          new: true,     // Return the updated document
+          runValidators: true  // Run mongoose validators
+        }
+      );
+
+      // Remove sensitive information before sending response
+      const userResponse = updatedUser.toObject();
+      delete userResponse.password;
+
+      res.json(userResponse);
+    } catch (error) {
+      console.error('Update error:', error);
+      
+      // Handle potential duplicate key errors
+      if (error.code === 11000) {
+        return res.status(409).json({ 
+          message: "Username or email already exists" 
+        });
+      }
+
+      res.status(500).json({ 
+        message: "An error occurred while updating the profile",
+        error: error.message 
       });
+    }
   }
 );
 

@@ -22,7 +22,7 @@ let userSchema = mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
   email: { type: String, required: true },
-  birthdate: Date, //correct format is yyyy-mm-dd
+  birthdate:{ type: Date, required: true }, //correct format is yyyy-mm-dd
   favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
 });
 userSchema.statics.hashPassword = (password) => {
