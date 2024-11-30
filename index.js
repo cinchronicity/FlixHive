@@ -182,7 +182,7 @@ app.get(
   "/movies/:title",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Movies.findOne({ title: req.params.title }) //pass a parameter(title) to the findOne method to find a movie by title
+    await Movies.findOne({ title: req.params.title }).populate("actors", "name birthYear") //pass a parameter(title) to the findOne method to find a movie by title
       .then((movie) => {
         res.json(movie);
       })
