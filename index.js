@@ -166,7 +166,7 @@ app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    Movies.find().populate("actor", "name birthYear")
+    await Movies.find().populate("actors", "name birthYear")
       .then((movies) => {
         res.status(201).json(movies);
       })
