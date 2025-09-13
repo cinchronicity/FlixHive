@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyFlix Documentation</title>
+    <title>FlixHive Documentation</title>
 
     <style>
         body {
@@ -45,12 +45,12 @@
 <body>
     <div>
         <!-- needs more styling refer to project brief and look at doc examples -->
-        <h1>MyFlix API </h1>
+        <h1>FlixHive API </h1>
 
         <h3> Context</h3>
-        Welcome to MyFlix API documentation!
+        Welcome to FlixHive API documentation!
         <br>
-        The myFlix API is a RESTful web service built with Node.js and Express that provides users with access to
+        The FlixHive API is a RESTful web service built with Node.js and Express that provides users with access to
         information about various movies, directors, and genres. The server-side application allows users to register,
         manage their profiles, and curate a list of their favorite movies. The API supports CRUD operations, allowing
         users
@@ -79,7 +79,7 @@
         backend is built with Node.js and Express, with data stored in a MongoDB database and modeled using Mongoose.
 
         <h3>Purpose</h3>
-        The myFlix API serves as the backend component of a comprehensive movie application. It is designed for movie
+        The FlixHive API serves as the backend component of a comprehensive movie application. It is designed for movie
         enthusiasts who want quick and easy access to a wide range of movie-related information. This project
         demonstrates skills in building scalable RESTful APIs, managing databases, and implementing user authentication
         and data security.
@@ -118,7 +118,7 @@
                     <td>/users</td>
                     <td>POST</td>
                     <td>none</td>
-                    <td>A JSON object including a name and favorite movies <br> Example:
+                    <td>A JSON object with user registration data <br> Example:
 
                         <pre>
                         {
@@ -126,7 +126,6 @@
                             password: { type: String, required: true },
                             email: { type: String, required: true },
                             birthdate: {type: Date},
-                            favoriteMovies: ["string"]
                         }
                     </pre>
                     </td>
@@ -134,12 +133,13 @@
 
                         <pre>
                         {
-                        "_id": "uuid",
+                        "_id": "MongoDB ObjectID",
                         username: { type: String, required: true },
                         password: { type: String, required: true },
                         email: { type: String, required: true },
                         birthdate: {type: Date},
-                        favoriteMovies: ["MovieID"]
+                            "favoriteMovies": [],
+                            "__v": 0
                         }
                     </pre>
                     </td>
@@ -149,10 +149,11 @@
                     <td>Allows users update their user info by their username</td>
                     <td>/users/:username</td>
                     <td>PUT</td>
-                    <td>none</td>
+                    <td>:username</td>
                     <td>A JSON object including chosen updated user information <br> Example:
 
                         <pre>
+                        only include fields you want to update
                         {
                         "username": "updatedString",
                         "password": "updatedString",
@@ -163,13 +164,13 @@
 
                         <pre>
                         {
-                            "_id": "uuid",
+                            "_id": "MongoDB ObjectID",
                             username: "updatedString",
                             password: "updatedString",
                             email: "string",
                             birthdate: Date,
-                            favoriteMovies: ["MovieID"]
-                            
+                            favoriteMovies: ["MovieID"],
+                            "__v": 0
                         }
                     </pre>
                     </td>
@@ -180,7 +181,7 @@
                     <td>Allows user to add a movie to their favorites list using MovieID</td>
                     <td>/users/:username/movies/:MovieID</td>
                     <td>POST</td>
-                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>:username (username in URL), :MovieID (movie ID to add) </td>
                     <td>none</td>
 
 
@@ -188,12 +189,13 @@
 
                         <pre>
                             {
-                                "_id": "uuid",
-                                username: "updatedString",
-                                password: "updatedString",
-                                email: "string",
+                                "_id": "MongoDB ObjectID",
+                                username: "String",
+                                password: "String",
+                                email: "String",
                                 birthdate: Date,
-                                favoriteMovies: ["newMovieID"]
+                                favoriteMovies: ["newMovieID"],
+                                "__v": 0
                                 
                             }
                     </pre>
@@ -204,7 +206,7 @@
                     <td>Allows user to delete a movie from their favorites list, according to the MovieID</td>
                     <td>/users/:username/movies/:MovieID</td>
                     <td>DELETE</td>
-                    <td>Any existing movie (spaces in movieTitle must include %20) </td>
+                    <td>:username (username in URL), :MovieID (movie ID to remove) </td>
                     <td>none</td>
 
 
@@ -213,11 +215,11 @@
                         <pre>
                             {
                                 "_id": "uuid",
-                                username: "updatedString",
-                                password: "updatedString",
-                                email: "string",
+                                username: "String",
+                                email: "String",
                                 birthdate: Date,
-                                favoriteMovies: [""]
+                                favoriteMovies: [""],
+                                "__v": 0
                                 
                             }
                     </pre>
@@ -228,7 +230,7 @@
                     <td>Allows user to deregister</td>
                     <td>/users/:username</td>
                     <td>DELETE</td>
-                    <td>Any existing username </td>
+                    <td>:username (username in URL) </td>
                     <td>none</td>
 
 
@@ -250,71 +252,104 @@
 
                         <pre>
                         {
+                        "_id": "MongoDB ObjectID",
                         "title": "string",
                         "description": "string",
                         "genre": {
                             "name": "string",
-                            "description": "string"
+                            "description": "string",
+                            "genre": {
+                                "name": "string",
+                                "description": "string"
                             },
-                        ...
-                        }
+                            "director": {
+                                "name": "string",
+                                "bio": "string",
+                            "actors": [
+                            {
+                                "name": "string",
+                                "birthYear": "integer"
+                            }
+                            ],
+                            "imagePath": "string",
+                            "featured": "boolean"
+                            },
+                        }}
                                   </pre>
                     </td>
                 </tr>
             
                 <!-- RETURN DATA ABOUT A SPECIFIC MOVIE BY TITLE-->
                 <tr>
-                    <td>Returns movie data</td>
+                    <td>Returns movie data by title</td>
                     <td>/movies/:title</td>
                     <td>GET</td>
-                    <td>none</td>
+                    <td>:title (movie title in URL)</td>
                     <td>none</td>
                     <td> JSON object's holding data about specified movie <br> Example:
 
                         <pre>
-                        {
+                      {
+                        "_id": "MongoDB ObjectID",
                         "title": "string",
                         "description": "string",
                         "genre": {
                             "name": "string",
-                            "description": "string"
+                            "description": "string",
+                            "genre": {
+                                "name": "string",
+                                "description": "string"
                             },
-                        ...
-                        }
+                            "director": {
+                                "name": "string",
+                                "bio": "string",
+                            "actors": [
+                            {
+                                "name": "string",
+                                "birthYear": "integer"
+                            }
+                            ],
+                            "imagePath": "string",
+                            "featured": "boolean"
+                            },
+                        }}
                                   </pre>
                     </td>
                 </tr>
                 <!-- RETURN DATA ABOUT A GENRE-->
                 <tr>
-                    <td>Returns data for specified genre</td>
+                    <td>Returns data for specified genre by name</td>
                     <td>/genres/:name</td>
                     <td>GET</td>
-                    <td>none</td>
+                    <td>:name (genre name in URL)</td>
                     <td>none</td>
                     <td>A JSON object holding data about a genre <br> Example:
 
                         <pre>
                         {
-                       "name": "string",
-                       "description": "string"
+                        "_id": "MongoDB ObjectID",
+                        "name": "string",
+                        "description": "string"
                         }
                     </pre>
                     </td>
                 </tr>
                 <!-- RETURN DATA ABOUT A DIRECTOR-->
                 <tr>
-                    <td>Returns data for a specific director</td>
+                    <td>Returns data for a specific director by name</td>
                     <td>/directors/:directorName</td>
                     <td>GET</td>
-                    <td>none</td>
+                    <td>:directorName (director name in URL)</td>
                     <td>none</td>
                     <td>A JSON object holding data about a director <br> Example:
 
                         <pre>
                         {
-                       "name": "string",
-                       "bio": "string",
-                       ...
+                           "_id": "MongoDB ObjectID",
+                           "name": "string",
+                           "bio": "string",
+                           "birthYear": "integer",
+                           "deathYear": "integer"
                         }
                     </pre>
                     </td>
@@ -324,16 +359,15 @@
                     <td>Returns data for a specific actor</td>
                     <td>/actors/:actorName</td>
                     <td>GET</td>
-                    <td>none</td>
+                    <td>:name (actor name in URL)</td>
                     <td>none</td>
                     <td>A JSON object holding data about specified Actor <br> Example:
 
                         <pre>
                         {
-                        "_id": "uuid",
+                        "_id": "MongoDB ObjectID",
                         "name": "string",
                         "birthYear": "integer"
-                       ...
                         }
                     </pre>
                     </td>
