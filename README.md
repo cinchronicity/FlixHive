@@ -107,10 +107,10 @@ The API was tested with Postman to ensure all endpoints work as expected and ret
 
 This API is deployed on Heroku.
 
-Live API: Heroku App Link
+ <!--Live API: Heroku App Link --> 
  <!-- replace with your actual link -->
 
-Documentation: Available via Postman collection
+ <!--Documentation: Available via Postman collection -->
 
 ### 📖 Future Improvements
 
