@@ -21,7 +21,7 @@ const cors = require("cors"); //import cors module to allow requests from all or
 //   "http://testsite.com",
 //   "http://localhost:1234",
 //   "https://flixhive-cf7fbbd939d2.herokuapp.com",
-//   "https://the-flixhive.netlify.app", 
+//   "https://the-flixhive.netlify.app",
 //   "http://localhost:4200"
 // ];
 // app.use(
@@ -40,7 +40,7 @@ const cors = require("cors"); //import cors module to allow requests from all or
 //   })
 // );
 
-app.use(cors());  //allows all domains to access the API
+app.use(cors()); //allows all domains to access the API
 
 //passport middleware function for authenticating users
 let auth = require("./auth")(app); //(app) allows Express into auth.js file
@@ -144,7 +144,7 @@ app.post(
  * @returns {Object} Updated user object with new favorite (default 200 status)
  * @returns {Object} 500 - Server error
  */
-//CREATE 
+//CREATE
 app.post(
   "/users/:username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -231,7 +231,8 @@ app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Movies.find().populate("actors", "name birthYear")
+    await Movies.find()
+      .populate("actors", "name birthYear")
       .then((movies) => {
         res.status(201).json(movies);
       })
@@ -257,7 +258,8 @@ app.get(
   "/movies/:title",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Movies.findOne({ title: req.params.title }).populate("actors", "name birthYear") //pass a parameter(title) to the findOne method to find a movie by title
+    await Movies.findOne({ title: req.params.title })
+      .populate("actors", "name birthYear") //pass a parameter(title) to the findOne method to find a movie by title
       .then((movie) => {
         res.json(movie);
       })
@@ -330,7 +332,7 @@ app.get(
  * @returns {Object} 200 (default response) - Actor object with bio and birth year
  * @returns {Object} 500 - Server error
  */
-// READ 
+// READ
 app.get(
   "/actors/:name",
   passport.authenticate("jwt", { session: false }),
@@ -402,7 +404,6 @@ app.put(
       .withMessage("Birthdate must be a valid date in YYYY-MM-DD format"),
   ],
   async (req, res) => {
-
     // Check validation object for errors
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -412,19 +413,19 @@ app.put(
     try {
       // Find the existing user by ID from the JWT token
       const existingUser = await Users.findById(req.user._id);
-      
+
       if (!existingUser) {
         return res.status(404).send("User not found");
       }
 
       // Prepare update object
       const updateData = {};
-      
+
       // Only add fields that are present in the request
       if (req.body.username) updateData.username = req.body.username;
       if (req.body.email) updateData.email = req.body.email;
       if (req.body.birthdate) updateData.birthdate = req.body.birthdate;
-      
+
       // Special handling for password
       if (req.body.password) {
         updateData.password = Users.hashPassword(req.body.password);
@@ -432,11 +433,11 @@ app.put(
 
       // Perform the update using the user's ID
       const updatedUser = await Users.findByIdAndUpdate(
-        req.user._id, 
-        { $set: updateData }, 
-        { 
-          new: true,     // Return the updated document
-          runValidators: true  // Run mongoose validators
+        req.user._id,
+        { $set: updateData },
+        {
+          new: true, // Return the updated document
+          runValidators: true, // Run mongoose validators
         }
       );
 
@@ -446,18 +447,18 @@ app.put(
 
       res.json(userResponse);
     } catch (error) {
-      console.error('Update error:', error);
-      
+      console.error("Update error:", error);
+
       // Handle potential duplicate key errors
       if (error.code === 11000) {
-        return res.status(409).json({ 
-          message: "Username or email already exists" 
+        return res.status(409).json({
+          message: "Username or email already exists",
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         message: "An error occurred while updating the profile",
-        error: error.message 
+        error: error.message,
       });
     }
   }
@@ -507,7 +508,7 @@ app.delete(
  * @returns {string} 400 - User not found
  * @returns {Object} 500 - Server error
  */
-//DELETE 
+//DELETE
 app.delete(
   "/users/:username",
   passport.authenticate("jwt", { session: false }),
@@ -545,7 +546,7 @@ app.get("/", (req, res) => {
  * @description Serve static files from the public directory
  * @function
  * @name serveStaticFiles
- * @param {string} path - Directory path "public" 
+ * @param {string} path - Directory path "public"
  * @returns {void} Serves static assets (CSS, JS, images, etc.)
  */
 app.use(express.static("public")); //Serve static files in a public folder in the project directory.
